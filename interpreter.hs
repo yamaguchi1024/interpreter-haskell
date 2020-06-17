@@ -6,20 +6,32 @@ expr  = Const( float  val  )
     | Let  ( string name, expr rhs, expr body )
 -}
 
+--[("a", 4)]
+
 data Expr
   = Const Int
   | Add Expr Expr
   | Mul Expr Expr
+  | Var String
+  | Let String Expr Expr
   deriving (Show)
 
-eval :: Expr -> Int
-eval (Const x) = x
-eval (Add x y) = (eval x) + (eval y)
-eval (Mul x y) = (eval x) * (eval y)
+lookupEnv :: String -> [(String, Int)] -> Int
+lookupEnv target ((str,val):list)
+  = if (target == str) then val else lookupEnv target list 
+lookupEnv target []
+  = error ("Could not find Val " ++ target)
+
+eval :: Expr -> [(String, Int)] -> Int
+eval (Const x) env = x
+eval (Add x y) env = (eval x env) + (eval y env)
+eval (Mul x y) env = (eval x env) * (eval y env)
+eval (Var x) env = lookupEnv x env
+eval (Let name value body) env = eval body ((name, (eval value env)):env)
 
 main :: IO ()
 main = do
 --  input <- getContents
-  let input = Add (Mul (Const 5) (Const 2)) (Const 1)
-  let output = eval input
+  let input = Let "a" (Const 2) (Add (Var "b") (Const 3))
+  let output = eval input []
   print output
