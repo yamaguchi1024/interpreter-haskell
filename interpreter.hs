@@ -1,12 +1,16 @@
+-- Very simple Poly language interpreter written in Haskell
+-- Usage:
+--   Write input in line 39
+--   $ make haskell
+
 {-
-expr  = Const( float  val  )
-    | Var  ( string name )
-    | Add  ( expr lhs, expr rhs )
-    | Mul  ( expr lhs, expr rhs )
-    | Let  ( string name, expr rhs, expr body )
+    expr  = Const( float  val  )
+        | Var  ( string name )
+        | Add  ( expr lhs, expr rhs )
+        | Mul  ( expr lhs, expr rhs )
+        | Let  ( string name, expr rhs, expr body )
 -}
 
---[("a", 4)]
 
 data Expr
   = Const Int
@@ -31,7 +35,7 @@ eval (Let name value body) env = eval body ((name, (eval value env)):env)
 
 main :: IO ()
 main = do
---  input <- getContents
-  let input = Let "a" (Const 2) (Add (Var "b") (Const 3))
+-- Write input here
+  let input = Let "a" (Const 2) (Add (Var "a") (Const 3))
   let output = eval input []
   print output
